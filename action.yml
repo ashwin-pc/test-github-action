@@ -1,13 +1,27 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+# name: 'Hello World'
+# description: 'Greet someone and record the time'
+# inputs:
+#   who-to-greet:  # id of input
+#     description: 'Who to greet'
+#     required: true
+#     default: 'World'
+# outputs:
+#   time: # id of output
+#     description: 'The time we greeted you'
+# runs:
+#   using: 'node16'
+#   main: 'index.js'
+
+name: "Update Changelog"
+description: "Update changelog file when a pull request is raised"
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  token:
+    description: "GitHub token for authentication"
     required: true
-    default: 'World'
-outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+  changelog_path:
+    description: "Path to the changelog file in the repository"
+    # required: true
+    default: "CHANGELOG.md"
 runs:
-  using: 'node16'
-  main: 'index.js'
+  using: "node16"
+  main: "index.js"
