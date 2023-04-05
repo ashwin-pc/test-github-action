@@ -77,7 +77,7 @@ async function run() {
 
       const sectionTitle = prefixToSectionTitle[prefix[1].toLowerCase()];
       const regex = new RegExp(
-        `(## Unreleased(?:[\\s\\S]*?)## ${sectionTitle}(?:[\\s\\S]*?))(\\n[^#]|$)`,
+        `(## \\[Unreleased\\][\\s\\S]*?### ${sectionTitle}(?:[\\s\\S]*?))(\\n[^#]|$)`,
         "i"
       );
       updatedChangelogContent = updatedChangelogContent.replace(
