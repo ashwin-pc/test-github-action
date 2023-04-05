@@ -100,15 +100,13 @@ async function run() {
       );
     }
 
-    const newChangelogContent = `${changelogContent}\n- PR #${pullRequestNumber}: ${context.payload.pull_request.title}`;
-
     // Update the changelog file
     await octokit.rest.repos.createOrUpdateFileContents({
       owner,
       repo,
       path: changelogPath,
       message: `Update CHANGELOG.md for PR #${pullRequestNumber}`,
-      content: Buffer.from(newChangelogContent).toString("base64"),
+      content: Buffer.from(updatedChangelogContent).toString("base64"),
       sha: fileData.sha,
       branch: context.payload.pull_request.head.ref,
     });
