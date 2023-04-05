@@ -3,11 +3,14 @@ const github = require("@actions/github");
 
 // Function to extract changelog entries from the PR description
 function extractChangelogEntries(prDescription) {
-  const changelogSection = prDescription.match(/## Changelog([\s\S]*?)##/);
+  const changelogSection = prDescription.match(
+    /## Changelog\s*([\s\S]*?)(?:\n##|$)/
+  );
   if (changelogSection) {
-    const entries = changelogSection[1]
-      .trim()
+    const entries = changelogSection[0]
+      .replace(/## Changelog\s*/, "")
       .split("\n")
+      .filter((line) => line.trim().startsWith("-"))
       .map((entry) => entry.trim());
     return entries;
   }
