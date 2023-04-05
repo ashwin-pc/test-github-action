@@ -65,13 +65,13 @@ async function run() {
       pull_number: pullRequestNumber,
     });
 
-    console.dir(pullRequest);
+    const prDescription = pullRequest.body || "";
 
     // Decode the content and add a new line
     const changelogContent = Buffer.from(fileData.content, "base64").toString();
 
     // Extract the changelog entries from the PR description
-    const entries = extractChangelogEntries(pullRequest.body);
+    const entries = extractChangelogEntries(prDescription);
 
     console.log(`Found ${entries.length} changelog entries.`);
 
