@@ -100,6 +100,7 @@ async function run() {
       );
 
       console.log(`Added entry: ${entryText}`);
+      console.log(`Section title: ${sectionTitle}`);
       console.log(`Updated changelog content: \n${updatedChangelogContent}`);
     }
 
