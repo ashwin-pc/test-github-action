@@ -98,6 +98,9 @@ async function run() {
         regex,
         `$1\n${entryText}\n$2`
       );
+
+      console.log(`Added entry: ${entryText}`);
+      console.log(`Updated changelog content: \n${updatedChangelogContent}`);
     }
 
     // Update the changelog file
