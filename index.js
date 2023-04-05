@@ -57,6 +57,7 @@ async function run() {
 
     // Decode the content and add a new line
     const changelogContent = Buffer.from(fileData.content, "base64").toString();
+    console.log(`PR body: ${context.payload.pull_request.body}`);
 
     // Extract the changelog entries from the PR description
     const entries = extractChangelogEntries(context.payload.pull_request.body);
