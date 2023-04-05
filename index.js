@@ -89,7 +89,7 @@ async function run() {
         context.payload.pull_request.html_url
       );
 
-      const sectionTitle = prefixToSectionTitle[prefix[1].toLowerCase()];
+      const sectionTitle = prefixToSectionTitle[prefix.toLowerCase()];
       const regex = new RegExp(
         `(## \\[Unreleased\\][\\s\\S]*?### ${sectionTitle}(?:[\\s\\S]*?))(\\n[^#]|$)`,
         "i"
