@@ -61,6 +61,8 @@ async function run() {
     // Extract the changelog entries from the PR description
     const entries = extractChangelogEntries(context.payload.pull_request.body);
 
+    console.log(`Found ${entries.length} changelog entries.`);
+
     // If there are no entries, add a new entry with the PR title
     if (entries.length === 0) {
       entries.push(`- unknown: ${context.payload.pull_request.title}`);
@@ -101,7 +103,7 @@ async function run() {
 
     console.log("Changelog file updated successfully.");
   } catch (error) {
-    console.error(`Error updating changelog: ${error}`);
+    console.trace(`Error updating changelog: ${error}`);
     process.exit(1);
   }
 }
