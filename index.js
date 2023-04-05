@@ -47,6 +47,9 @@ async function run() {
     const context = github.context;
     const { owner, repo } = context.repo;
     const pullRequestNumber = context.payload.pull_request.number;
+    console.log(
+      `Updating changelog for PR #${pullRequestNumber}... by ${owner} in ${repo}`
+    );
 
     // Get the content of the changelog file
     const { data: fileData } = await octokit.rest.repos.getContent({
