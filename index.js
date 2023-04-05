@@ -55,12 +55,18 @@ async function run() {
       path: changelogPath,
     });
 
+    // Get the pull request details
+    const { data: pullRequest } = await octokit.rest.pulls.get({
+      owner,
+      repo,
+      pull_number: pullRequestNumber,
+    });
+
     // Decode the content and add a new line
     const changelogContent = Buffer.from(fileData.content, "base64").toString();
-    console.log(`PR body: ${context.payload.pull_request.body}`);
 
     // Extract the changelog entries from the PR description
-    const entries = extractChangelogEntries(context.payload.pull_request.body);
+    const entries = extractChangelogEntries(pullRequest.body);
 
     console.log(`Found ${entries.length} changelog entries.`);
 
