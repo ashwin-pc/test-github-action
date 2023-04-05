@@ -65,6 +65,8 @@ async function run() {
       pull_number: pullRequestNumber,
     });
 
+    console.dir(pullRequest);
+
     // Decode the content and add a new line
     const changelogContent = Buffer.from(fileData.content, "base64").toString();
 
