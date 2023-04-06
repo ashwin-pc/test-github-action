@@ -85,7 +85,7 @@ async function run() {
     // - <entry> ([#<PR number>](<PR link>))
     // - <entry> ([#<PR number>](<PR link>))
     // ...
-    const changesetContent = entries
+    const entryMap = entries
       .map((entry) =>
         convertString(entry, pullRequestNumber, pullRequest.html_url)
       )
@@ -95,9 +95,13 @@ async function run() {
         }
         acc[prefix].push(entry);
         return acc;
-      }, {})
-      .map((entries, prefix) => `${prefix}\n${entries.join("\n")}`)
-      .join("\n");
+      }, {});
+
+    const changesetContent = Object.entries(entryMap)
+      .map(([prefix, entries]) => {
+        return `${prefix}\n${entries.join("\n")}`;
+      })
+      .join("\n\n");
 
     // Add the changeset file to the repo
     await octokit.rest.repos.createOrUpdateFileContents({
