@@ -17,14 +17,6 @@ function extractChangelogEntries(prDescription) {
   return [];
 }
 
-// Define a mapping between the prefixes and section titles
-const prefixToSectionTitle = {
-  fix: "Bug Fixes",
-  feat: "Features",
-  unknown: "Uncategorized",
-  // Add more mappings if needed
-};
-
 function convertString(str, id, link) {
   const prefixes = Object.keys(prefixToSectionTitle); // add other possible values as needed
   const prefixeRegex = prefixes.join("|");
@@ -41,7 +33,7 @@ async function run() {
   try {
     // Read input parameters
     const token = process.env.INPUT_TOKEN;
-    const changelogPath = process.env.INPUT_CHANGELOG_PATH;
+    const changesetPath = process.env.INPUT_CHANGESET_PATH;
 
     // Set up Octokit with the provided token
     const octokit = github.getOctokit(token);
@@ -51,15 +43,8 @@ async function run() {
     const { owner, repo } = context.repo;
     const pullRequestNumber = context.payload.pull_request.number;
     console.log(
-      `Updating changelog for PR #${pullRequestNumber}... by ${owner} in ${repo}`
+      `Adding chnageset for PR #${pullRequestNumber}... by ${owner} in ${repo}`
     );
-
-    // Get the content of the changelog file
-    const { data: fileData } = await octokit.rest.repos.getContent({
-      owner,
-      repo,
-      path: changelogPath,
-    });
 
     // Get the pull request details
     const { data: pullRequest } = await octokit.rest.pulls.get({
@@ -68,12 +53,8 @@ async function run() {
       pull_number: pullRequestNumber,
     });
 
-    const prDescription = pullRequest.body || "";
-
-    // Decode the content and add a new line
-    const changelogContent = Buffer.from(fileData.content, "base64").toString();
-
     // Extract the changelog entries from the PR description
+    const prDescription = pullRequest.body || "";
     const entries = extractChangelogEntries(prDescription);
 
     console.log(`Found ${entries.length} changelog entries.`);
@@ -83,44 +64,43 @@ async function run() {
       entries.push(`- unknown: ${context.payload.pull_request.title}`);
     }
 
-    // Update the changelog with the new entries
-    let updatedChangelogContent = changelogContent;
-    for (const entry of entries) {
-      const [entryText, prefix] = convertString(
-        entry,
-        pullRequestNumber,
-        context.payload.pull_request.html_url
-      );
+    // Create a new changeset file and populate it with the new entries in the following format:
+    // <prefix
+    // - <entry> ([#<PR number>](<PR link>))
+    // - <entry> ([#<PR number>](<PR link>))
+    // - <entry> ([#<PR number>](<PR link>))
+    // <prefix>
+    // - <entry> ([#<PR number>](<PR link>))
+    // - <entry> ([#<PR number>](<PR link>))
+    // - <entry> ([#<PR number>](<PR link>))
+    // ...
+    const changesetContent = entries
+      .map((entry) =>
+        convertString(entry, pullRequestNumber, pullRequest.html_url)
+      )
+      .reduce((acc, [entry, prefix]) => {
+        if (!acc[prefix]) {
+          acc[prefix] = [];
+        }
+        acc[prefix].push(entry);
+        return acc;
+      }, {})
+      .map((entries, prefix) => `${prefix}\n${entries.join("\n")}`)
+      .join("\n");
 
-      const sectionTitle = prefixToSectionTitle[prefix.toLowerCase()];
-      const regex = new RegExp(
-        `(## \\[Unreleased\\][\\s\\S]*?### ${sectionTitle}(?:[\\s\\S]*?))(\\n[^#]|$)`,
-        "i"
-      );
-      updatedChangelogContent = updatedChangelogContent.replace(
-        regex,
-        `$1\n${entryText}\n$2`
-      );
-
-      console.log(`Added entry: ${entryText}`);
-      console.log(`Section title: ${sectionTitle}`);
-      console.log(`Updated changelog content: \n${updatedChangelogContent}`);
-    }
-
-    // Update the changelog file
+    // Add the changeset file to the repo
     await octokit.rest.repos.createOrUpdateFileContents({
       owner,
       repo,
-      path: changelogPath,
-      message: `Update CHANGELOG.md for PR #${pullRequestNumber}`,
-      content: Buffer.from(updatedChangelogContent).toString("base64"),
-      sha: fileData.sha,
+      path: `${changesetPath}//${pullRequestNumber}.md`,
+      message: `Add changeset for PR #${pullRequestNumber}`,
+      content: Buffer.from(changesetContent).toString("base64"),
       branch: context.payload.pull_request.head.ref,
     });
 
-    console.log("Changelog file updated successfully.");
+    console.log("Changeset file added successfully.");
   } catch (error) {
-    console.trace(`Error updating changelog: ${error}`);
+    console.trace(`Error adding changeset: ${error}`);
     process.exit(1);
   }
 }

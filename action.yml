@@ -4,10 +4,10 @@ inputs:
   token:
     description: "GitHub token for authentication"
     required: true
-  changelog_path:
-    description: "Path to the changelog file in the repository"
+  changeset_path:
+    description: "Path where the changeset files will be added"
     # required: true
-    default: "CHANGELOG.md"
+    default: "changeset/fragments"
 runs:
   using: "node16"
   main: "index.js"
