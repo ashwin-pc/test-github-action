@@ -1,6 +1,18 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 
+// Define the prefixes that can be used in the changelog entries
+const PREFIXES = [
+  "feat",
+  "fix",
+  "perf",
+  "docs",
+  "refactor",
+  "test",
+  "build",
+  "unknown",
+];
+
 // Function to extract changelog entries from the PR description
 function extractChangelogEntries(prDescription) {
   const changelogSection = prDescription.match(
@@ -18,8 +30,7 @@ function extractChangelogEntries(prDescription) {
 }
 
 function convertString(str, id, link) {
-  const prefixes = Object.keys(prefixToSectionTitle); // add other possible values as needed
-  const prefixeRegex = prefixes.join("|");
+  const prefixeRegex = PREFIXES.join("|");
   const regex = new RegExp(`-\\s(${prefixeRegex}):(.*)`);
   const match = str.match(regex);
   if (match) {
