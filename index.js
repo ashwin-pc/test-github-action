@@ -104,10 +104,11 @@ async function run() {
       .join("\n\n");
 
     // Add the changeset file to the repo
+    const changesetFileName = `changeset-${pullRequestNumber}.md`;
     await octokit.rest.repos.createOrUpdateFileContents({
       owner,
       repo,
-      path: `${changesetPath}//${pullRequestNumber}.md`,
+      path: `${changesetPath}/${changesetFileName}`,
       message: `Add changeset for PR #${pullRequestNumber}`,
       content: Buffer.from(changesetContent).toString("base64"),
       branch: context.payload.pull_request.head.ref,
