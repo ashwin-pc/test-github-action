@@ -76,11 +76,11 @@ async function run() {
     }
 
     // Create a new changeset file and populate it with the new entries in the following format:
-    // <prefix
+    // <prefix>:
     // - <entry> ([#<PR number>](<PR link>))
     // - <entry> ([#<PR number>](<PR link>))
     // - <entry> ([#<PR number>](<PR link>))
-    // <prefix>
+    // <prefix>:
     // - <entry> ([#<PR number>](<PR link>))
     // - <entry> ([#<PR number>](<PR link>))
     // - <entry> ([#<PR number>](<PR link>))
@@ -99,12 +99,12 @@ async function run() {
 
     const changesetContent = Object.entries(entryMap)
       .map(([prefix, entries]) => {
-        return `${prefix}\n${entries.join("\n")}`;
+        return `${prefix}:\n${entries.join("\n")}`;
       })
       .join("\n\n");
 
     // Add the changeset file to the repo
-    const changesetFileName = `changeset-${pullRequestNumber}.md`;
+    const changesetFileName = `changeset-${pullRequestNumber}.yml`;
     await octokit.rest.repos.createOrUpdateFileContents({
       owner,
       repo,
